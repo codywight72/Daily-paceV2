@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Daily Pace">
+<title>Daily Pace v2</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111827;background:#f3f4f6}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:650px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px 30px}
+header{display:flex;justify-content:space-between;align-items:end;margin-bottom:14px}h1{font-size:31px;letter-spacing:-.7px;margin:0}h2,h3,p{margin:0}.muted{color:#6b7280}.small{font-size:13px}
+.card{background:white;border:1px solid #e5e7eb;border-radius:18px;padding:16px;margin:12px 0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.score{font-size:22px;font-weight:800}
+.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:13px}.bar{height:100%;background:#111827;width:0;transition:.2s}
+.check{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #eee}.check:last-child{border:0}
+.check input{width:21px;height:21px;accent-color:#111827}.done{text-decoration:line-through;color:#9ca3af}
+button{min-height:46px;border:1px solid #d1d5db;border-radius:12px;background:white;padding:9px 14px;font-size:15px;font-weight:650;color:#111827}
+button.primary{background:#111827;color:white;border-color:#111827}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.meal{font-size:21px;font-weight:750;margin-top:3px}.timer{text-align:center;font-size:56px;font-weight:850;padding:12px 0 2px;font-variant-numeric:tabular-nums}
+.center{text-align:center}.msg{line-height:1.45;margin-top:7px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}.day{text-align:center;font-size:12px}.dot{height:34px;width:34px;margin:4px auto 0;border-radius:50%;display:grid;place-items:center;background:#eef0f3;font-size:13px;font-weight:700}.dot.good{background:#111827;color:white}.dot.today{outline:2px solid #111827;outline-offset:2px}
+.statrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stat{background:#f7f7f8;border-radius:13px;padding:12px}.stat b{display:block;font-size:21px}
+textarea{width:100%;min-height:70px;border:1px solid #d1d5db;border-radius:12px;padding:11px;font:inherit;resize:vertical}
+footer{text-align:center;padding:7px 0 22px}.ghost{background:transparent;border:0;color:#6b7280;font-size:13px}
+@media(prefers-color-scheme:dark){:root{background:#0b0f19;color:#f9fafb}.card{background:#111827;border-color:#263244}.muted{color:#9ca3af}.progress{background:#273244}.bar{background:#f9fafb}.check{border-color:#263244}button{background:#111827;color:#f9fafb;border-color:#374151}button.primary{background:#f9fafb;color:#111827;border-color:#f9fafb}.stat{background:#192131}.dot{background:#273244}.dot.good{background:#f9fafb;color:#111827}textarea{background:#111827;color:#f9fafb;border-color:#374151}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<div><div class="small muted" id="date"></div><h1>Daily Pace</h1></div>
+<div class="score" id="score">0/7</div>
+</header>
+
+<section class="card">
+<div class="top"><div><div class="small muted">TODAY</div><h2>Just keep moving.</h2></div><span class="small muted" id="paceText">0%</span></div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<div id="tasks"></div>
+</section>
+
+<section class="card">
+<div class="top"><div><div class="small muted">DINNER</div><div id="meal" class="meal"></div></div><button id="mealBtn">Change</button></div>
+<p id="mealNote" class="small muted msg"></p>
+</section>
+
+<section class="card">
+<div class="top"><div><div class="small muted">WORKOUT</div><h2 id="workoutName">Plank Board — 6 min</h2></div><span class="small muted" id="workoutRounds">6 rounds</span></div>
+<div class="timer" id="timer">00:30</div>
+<div id="phase" class="center muted">Plank — round 1 of 6</div>
+<div class="actions" style="justify-content:center;margin-top:12px"><button id="start" class="primary">Start</button><button id="reset">Reset</button></div>
+<p class="small muted center" style="margin-top:10px">30 sec plank · 20 sec rest · 6 rounds</p>
+</section>
+
+<section class="card">
+<div class="top"><div><div class="small muted">THIS WEEK</div><h2 id="weekHeadline">Build the streak.</h2></div><span class="small muted" id="weekCount">0/7 days</span></div>
+<div class="week" id="week"></div>
+<div class="statrow">
+<div class="stat"><span class="small muted">Workouts</span><b id="workoutCount">0</b></div>
+<div class="stat"><span class="small muted">Best day</span><b id="bestDay">0/7</b></div>
+</div>
+</section>
+
+<section class="card">
+<div class="small muted">TODAY'S NOTE</div>
+<textarea id="note" placeholder="Anything you want to remember today..."></textarea>
+</section>
+
+<section class="card">
+<div class="top"><div><div class="small muted">REMINDER</div><p id="message" class="msg">You don't need a perfect day. Just do the next small thing.</p></div><button id="motivate">Next</button></div>
+</section>
+
+<footer><button id="resetDay" class="ghost">Reset today's checklist</button></footer>
+</main>
+
+<script>
+const tasks=["Morning reset: dishes, pickup, laundry check","Kids: morning / school stuff handled","One household task","10-minute workout","Make dinner easier tonight","10-minute evening reset","Do one thing just for yourself"];
+const meals=[["Chicken tacos","Chicken, tortillas, cheese, lettuce, salsa."],["Spaghetti + garlic bread","Easy pasta night. Add a salad if you have one."],["Breakfast for dinner","Eggs, bacon/sausage, toast and fruit."],["Sheet-pan chicken","Chicken + potatoes + whatever vegetables need using."],["Burgers + fries","Keep it simple. Frozen fries count."],["Quesadillas","Cheese/chicken quesadillas with fruit or veggies."],["Pizza night","Homemade or takeout. No guilt required."],["Chicken rice bowls","Rice, chicken, veggies and a sauce."],["Grilled cheese + tomato soup","Fast, cheap and kid-friendly."],["Breakfast burritos","Eggs, cheese, potatoes and whatever else is around."]];
+const reminders=["You don't need a perfect day. Just do the next small thing.","Consistency beats a heroic Tuesday.","Make tonight easier, not perfect.","Get one win, then get another.","You do not need to catch up on everything today.","A boring good day is still a good day."];
+const KEY="dailyPaceV2";
+const iso=d=>{const x=new Date(d);return x.toISOString().slice(0,10)};
+const today=iso(new Date());
+let db=JSON.parse(localStorage.getItem(KEY)||"{}");
+if(!db.days)db.days={};
+if(!db.days[today])db.days[today]={checks:Array(7).fill(false),meal:Math.floor(Math.random()*meals.length),workouts:0,note:""};
+let state=db.days[today], reminder=db.reminder||0;
+
+function save(){db.days[today]=state;db.reminder=reminder;localStorage.setItem(KEY,JSON.stringify(db))}
+function render(){
+document.getElementById("date").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+const box=document.getElementById("tasks");box.innerHTML="";
+tasks.forEach((t,i)=>{const lab=document.createElement("label");lab.className="check";const cb=document.createElement("input");cb.type="checkbox";cb.checked=state.checks[i];const sp=document.createElement("span");sp.textContent=t;if(cb.checked)sp.className="done";cb.onchange=()=>{state.checks[i]=cb.checked;save();render()};lab.append(cb,sp);box.appendChild(lab)});
+const n=state.checks.filter(Boolean).length;document.getElementById("score").textContent=n+"/7";document.getElementById("paceText").textContent=Math.round(n/7*100)+"%";document.getElementById("bar").style.width=(n/7*100)+"%";
+document.getElementById("meal").textContent=meals[state.meal][0];document.getElementById("mealNote").textContent=meals[state.meal][1];
+document.getElementById("note").value=state.note||"";document.getElementById("message").textContent=reminders[reminder];
+renderWeek();save();
+}
+function renderWeek(){
+const now=new Date();const monday=new Date(now);const day=now.getDay();monday.setDate(now.getDate()-(day===0?6:day-1));
+const week=document.getElementById("week");week.innerHTML="";let completed=0,best=0,workouts=0;
+for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);const k=iso(d);const s=db.days[k];const n=s?s.checks.filter(Boolean).length:0;if(n>=5)completed++;if(n>best)best=n;if(s)workouts+=s.workouts||0;const el=document.createElement("div");el.className="day";el.innerHTML="<div>"+d.toLocaleDateString(undefined,{weekday:"narrow"})+"</div>";const dot=document.createElement("div");dot.className="dot"+(n>=5?" good":"")+(k===today?" today":"");dot.textContent=n;el.appendChild(dot);week.appendChild(el)}
+document.getElementById("weekCount").textContent=completed+"/7 days";document.getElementById("workoutCount").textContent=workouts;document.getElementById("bestDay").textContent=best+"/7";
+document.getElementById("weekHeadline").textContent=completed>=5?"You're building momentum.":completed>=3?"Good week so far.":"Build the streak.";
+}
+document.getElementById("mealBtn").onclick=()=>{state.meal=(state.meal+1)%meals.length;save();render()};
+document.getElementById("motivate").onclick=()=>{reminder=(reminder+1)%reminders.length;save();render()};
+document.getElementById("note").oninput=e=>{state.note=e.target.value;save()};
+document.getElementById("resetDay").onclick=()=>{if(confirm("Reset today's checklist?")){state.checks=Array(7).fill(false);save();render()}};
+
+let running=false,interval=null,phase="plank",round=1,seconds=30;
+function draw(){document.getElementById("timer").textContent="00:"+String(seconds).padStart(2,"0");document.getElementById("phase").textContent=phase==="plank"?`Plank — round ${round} of 6`:`Rest — round ${round} of 6`;document.getElementById("start").textContent=running?"Pause":"Start"}
+function finishWorkout(){running=false;clearInterval(interval);state.workouts=(state.workouts||0)+1;state.checks[3]=true;save();document.getElementById("phase").textContent="Workout complete 🎉";document.getElementById("start").textContent="Start again";render()}
+function tick(){if(seconds>0){seconds--;draw();return}if(phase==="plank"){phase="rest";seconds=20}else if(round<6){round++;phase="plank";seconds=30}else{finishWorkout();return}draw()}
+document.getElementById("start").onclick=()=>{if(running){running=false;clearInterval(interval)}else{running=true;clearInterval(interval);interval=setInterval(tick,1000)}draw()};
+document.getElementById("reset").onclick=()=>{running=false;clearInterval(interval);phase="plank";round=1;seconds=30;draw()};
+render();draw();
+</script>
+</body>
+</html>
